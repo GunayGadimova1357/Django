@@ -117,11 +117,11 @@ def choose_character():
         choice = input("> ")
 
         if choice == "1":
-            return Warrior("Arthur")
+            return Warrior("Valerius")
         elif choice == "2":
-            return Mage("Merlin")
+            return Mage("Zephyrus")
         elif choice == "3":
-            return Archer("Robin")
+            return Archer("Nightshade")
         else:
             print("Invalid choice\n")
 
