@@ -1,0 +1,41 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Home | Sports{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="eyebrow">Sports</div>
+    <h1>Three sports. Three different rhythms. One place to explore them.</h1>
+    <p class="lead">Welcome to Sports, a simple website about football, hockey, and basketball. Each page gives a short introduction to one sport and what makes it interesting.</p>
+
+    <div class="stats">
+        <div class="stat-card">
+            <strong>90</strong>
+            <p>minutes of football strategy and momentum swings.</p>
+        </div>
+        <div class="stat-card">
+            <strong>60</strong>
+            <p>minutes of high-speed hockey action on the ice.</p>
+        </div>
+        <div class="stat-card">
+            <strong>48</strong>
+            <p>minutes of basketball built on pace, spacing, and precision.</p>
+        </div>
+    </div>
+</section>
+
+<section class="content-grid">
+    <article class="info-card">
+        <h2>What you can find here</h2>
+        <p>This website is designed as a simple multi-page Django project using template inheritance. Use the navigation above to move between the main sports sections.</p>
+    </article>
+    <aside class="info-card">
+        <h2>Sections</h2>
+        <ul>
+            <li>Football: teamwork, tactics, and global popularity.</li>
+            <li>Hockey: speed, contact, and constant transitions.</li>
+            <li>Basketball: athleticism, timing, and shot-making.</li>
+        </ul>
+    </aside>
+</section>
+{% endblock %}
