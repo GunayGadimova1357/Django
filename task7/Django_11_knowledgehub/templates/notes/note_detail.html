@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Knowledge Hub - Note Details
+{% endblock %}
+
+{% block content %}
+
+{% if note %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow-lg border-0 rounded-4">
+
+            <div class="card-body p-5">
+
+                <h1 class="card-title fw-bold text-primary mb-4">
+                    {{ note.title }}
+                </h1>
+
+                <div class="mb-3">
+                    <span class="badge bg-primary">
+                        {{ note.category }}
+                    </span>
+                </div>
+
+                <p class="text-muted mb-4">
+                    <strong>Date:</strong> {{ note.created_at }}
+                </p>
+
+                <div class="mb-4">
+                    <p class="fs-5">
+                        {{ note.content }}
+                    </p>
+                </div>
+
+                <div class="border-top pt-3">
+                    <p>
+                        <strong>Tags:</strong>
+                        {{ note.tags }}
+                    </p>
+                </div>
+
+                <a href="{% url 'notes:notes_list' %}"
+                   class="btn btn-outline-primary mt-3">
+                    ← Back to Notes
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% else %}
+
+<div class="alert alert-danger text-center">
+    Note not found
+</div>
+
+{% endif %}
+
+{% endblock %}

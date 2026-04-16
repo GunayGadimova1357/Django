@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Knowledge Hub - Contact Success
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5 text-center">
+
+                <h1 class="fw-bold text-success mb-4">
+                    Message Sent
+                </h1>
+
+                <p class="fs-5 mb-4">
+                    Thank you, <strong>{{ contact_name }}</strong>. Your message has been received.
+                </p>
+
+                <a href="{% url 'home' %}" class="btn btn-primary">
+                    Return to Home Page
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

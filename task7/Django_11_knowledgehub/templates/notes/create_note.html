@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Knowledge Hub - Create Note
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5">
+
+                <h1 class="fw-bold text-center mb-5">
+                    Create Note
+                </h1>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {{ form.non_field_errors }}
+
+                    <div class="mb-3">
+                        <label class="form-label">Title:</label>
+                        {{ form.title }}
+                        {{ form.title.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Content:</label>
+                        {{ form.content }}
+                        {{ form.content.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category:</label>
+                        {{ form.category }}
+                        {{ form.category.errors }}
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Tags:</label>
+                        {{ form.tags }}
+                        {{ form.tags.errors }}
+                    </div>
+
+                    <div class="form-text mb-4">
+                        {{ form.tags.help_text }}
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">
+                        Save Note
+                    </button>
+                </form>
+
+                {% if submitted_note %}
+                    <div class="alert alert-success mt-4 mb-0">
+                        <h5 class="fw-bold">Note created successfully</h5>
+                        <p class="mb-1"><strong>Title:</strong> {{ submitted_note.title }}</p>
+                        <p class="mb-1"><strong>Category:</strong> {{ submitted_note.category }}</p>
+                        <p class="mb-1"><strong>Content:</strong> {{ submitted_note.content }}</p>
+                        <p class="mb-0"><strong>Tags:</strong> {{ submitted_note.tags|join:", " }}</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
