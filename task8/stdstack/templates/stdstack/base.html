@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StdStack{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0d1117; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="text-slate-100 flex flex-col min-h-screen">
+
+    <nav style="background-color: #06090f; border-bottom: 1px solid #1a2438;" class="sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="{% url 'stdstack:article-list' %}" class="flex items-center gap-2.5">
+                    <div style="background-color: #2F2EBE;" class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-bold text-sm">S</span>
+                    </div>
+                    <span class="text-xl font-bold text-white tracking-tight">
+                        std<span style="color: #6b8cff;">stack</span>
+                    </span>
+                </a>
+                <a href="{% url 'stdstack:article-create' %}"
+                   style="background-color: #2F2EBE;"
+                   class="flex items-center gap-2 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-opacity duration-200 hover:opacity-85 active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    New Article
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow w-full">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="background-color: #06090f; border-top: 1px solid #1a2438;" class="py-10 mt-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p style="color: #3d4f6b;" class="text-sm">
+                &copy; {% now "Y" %} <span class="text-white font-semibold">StdStack</span> — Built with Django &amp; Tailwind
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>

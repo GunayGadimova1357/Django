@@ -1,0 +1,100 @@
+{% extends "stdstack/base.html" %}
+
+{% block title %}Latest Articles — StdStack{% endblock %}
+
+{% block content %}
+
+<div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white py-20 px-4">
+    <div class="max-w-7xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-extrabold mb-5 leading-tight">
+            Explore Insights &amp;<br>
+            <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                Technical Articles
+            </span>
+        </h1>
+        <p class="text-slate-400 text-lg max-w-xl mx-auto">
+            Curated knowledge for developers, engineers, and curious minds.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    {% if articles %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for article in articles %}
+        <article class="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col group
+                        transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200 hover:border-indigo-200">
+
+            
+            {% if article.image %}
+            <a href="{{ article.get_absolute_url }}" class="relative block aspect-video overflow-hidden bg-slate-100">
+                <img src="{{ article.image.url }}" alt="{{ article.title }}"
+                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
+                <span class="absolute top-3 left-3 bg-indigo-600/90 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">
+                    {{ article.category.name }}
+                </span>
+            </a>
+            {% else %}
+            <a href="{{ article.get_absolute_url }}" class="relative block aspect-video overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                <svg class="w-16 h-16 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2"/>
+                </svg>
+                <span class="absolute top-3 left-3 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    {{ article.category.name }}
+                </span>
+            </a>
+            {% endif %}
+
+            <div class="p-6 flex-grow flex flex-col">
+                <p class="text-slate-400 text-xs font-medium mb-3 uppercase tracking-wider">
+                    {{ article.created_at|date:"M d, Y" }}
+                </p>
+                <h2 class="text-lg font-bold text-slate-900 mb-3 leading-snug group-hover:text-indigo-700 transition-colors flex-grow">
+                    <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                </h2>
+                <p class="text-slate-500 text-sm line-clamp-3 mb-5 leading-relaxed">
+                    {{ article.preview_text }}
+                </p>
+
+                <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-xs font-bold flex-shrink-0">
+                            {{ article.author|slice:":1"|upper }}
+                        </div>
+                        <span class="text-xs text-slate-500 font-medium truncate max-w-[120px]">{{ article.author }}</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs font-semibold">
+                        <span class="flex items-center gap-1 text-green-600">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+                            {{ article.likes }}
+                        </span>
+                        <span class="flex items-center gap-1 text-red-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                            {{ article.dislikes }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-28">
+        <div class="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-400 mb-2">No articles yet</h2>
+        <p class="text-slate-400 mb-8">Be the first to share your knowledge with the community.</p>
+        <a href="{% url 'stdstack:article-create' %}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Write an article
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
