@@ -1,0 +1,79 @@
+{% extends 'review/base.html' %}
+
+{% block content %}
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <h2>{{ product.name }}</h2>
+        <p class="text-muted">{{ product.description }}</p>
+    </div>
+</div>
+
+<h4 class="mb-3">Reviews</h4>
+
+{% for review in reviews %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <strong>{{ review.user.username }}</strong>
+                <span class="rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            ★
+                        {% else %}
+                            ☆
+                        {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+
+            <p class="mt-2">{{ review.text }}</p>
+
+            {% if review.user == request.user %}
+                <a href="{% url 'edit_review' review.pk %}" class="btn btn-sm btn-warning">
+                    Edit
+                </a>
+                <a href="{% url 'delete_review' review.pk %}" class="btn btn-sm btn-danger">
+                    Delete
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p>No reviews yet.</p>
+{% endfor %}
+
+<hr>
+
+{% if user.is_authenticated %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5>Add a review</h5>
+
+            <form method="post" action="{% url 'add_review' product.pk %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Text</label>
+                    {{ form.text }}
+                    {% for error in form.text.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Rating</label>
+                    {{ form.rating }}
+                    {% for error in form.rating.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <button class="btn btn-success">Submit</button>
+            </form>
+        </div>
+    </div>
+{% else %}
+    <p>Please log in to leave a review.</p>
+{% endif %}
+
+{% endblock %}
