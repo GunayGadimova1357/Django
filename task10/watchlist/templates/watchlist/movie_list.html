@@ -1,0 +1,69 @@
+{% extends 'watchlist/base.html' %}
+
+{% block title %}My Movies{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">My Movies</h1>
+    <a href="{% url 'add_movie' %}" class="btn btn-primary">Add movie</a>
+</div>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <select name="status" class="form-select">
+            <option value="">All statuses</option>
+            {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-4">
+        <select name="genre" class="form-select">
+            <option value="">All genres</option>
+            {% for genre in genres %}
+                <option value="{{ genre }}" {% if selected_genre == genre %}selected{% endif %}>{{ genre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-4 d-flex gap-2">
+        <button type="submit" class="btn btn-outline-primary">Filter</button>
+        <a href="{% url 'movie_list' %}" class="btn btn-outline-secondary">Reset</a>
+    </div>
+</form>
+
+{% if movies %}
+    <div class="table-responsive bg-white rounded shadow-sm">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Genre</th>
+                    <th>Year</th>
+                    <th>Status</th>
+                    <th>Rating</th>
+                    <th>Added</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movie in movies %}
+                    <tr>
+                        <td>{{ movie.title }}</td>
+                        <td>{{ movie.genre }}</td>
+                        <td>{{ movie.year }}</td>
+                        <td>{{ movie.get_status_display }}</td>
+                        <td>{{ movie.rating }}/10</td>
+                        <td>{{ movie.created_at|date:'d.m.Y H:i' }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'edit_movie' movie.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a href="{% url 'delete_movie' movie.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">No movies found.</div>
+{% endif %}
+{% endblock %}
