@@ -41,12 +41,17 @@ class ArticleListView(ArticleQuerysetMixin, ListView):
     context_object_name = "articles"
 
     def get_queryset(self):
-        return self.base_queryset().order_by("-created_at")
+        qs = self.base_queryset().order_by("-created_at")
+        q = self.request.GET.get("q", "").strip()
+        if q:
+            qs = qs.filter(
+                Q(title__icontains=q) | Q(author__username__icontains=q)
+            )
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Latest Articles"
-        context["page_subtitle"] = "All approved articles ordered by creation time."
+        context["search_query"] = self.request.GET.get("q", "").strip()
         return context
 
 
@@ -67,7 +72,6 @@ class PopularArticleListView(ArticleQuerysetMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Popular"
-        context["page_subtitle"] = "Articles with an average rating of 4 or higher."
         return context
 
 
@@ -86,7 +90,6 @@ class CategoryArticleListView(ArticleQuerysetMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = self.category.name
-        context["page_subtitle"] = "Articles from this category."
         return context
 
 
@@ -105,7 +108,6 @@ class FavoriteArticleListView(LoginRequiredMixin, ArticleQuerysetMixin, ListView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Favorites"
-        context["page_subtitle"] = "Articles saved in your bookmarks."
         return context
 
 
@@ -196,7 +198,6 @@ def author_articles(request, pk):
         {
             "articles": articles,
             "page_title": author.get_username(),
-            "page_subtitle": "Approved articles by this author.",
         },
     )
 
