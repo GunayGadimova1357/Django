@@ -1,0 +1,192 @@
+{% extends "main/base.html" %}
+
+{% block title %}Article Form - StdStack{% endblock %}
+
+{% block content %}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+    .ql-toolbar.ql-snow {
+        border-color: #e4e4e7;
+        border-radius: 8px 8px 0 0;
+        background: #fafafa;
+    }
+    .ql-container.ql-snow {
+        border-color: #e4e4e7;
+        border-radius: 0 0 8px 8px;
+        min-height: 300px;
+        font-family: inherit;
+        font-size: 1rem;
+    }
+    .ql-editor.ql-blank::before { color: #71717a; font-style: normal; }
+    .ql-editor img { max-width: 100%; border-radius: 6px; margin: 8px 0; }
+
+    #cover-upload-zone { transition: border-color 0.15s, background 0.15s; }
+    #cover-upload-zone:hover { border-color: #a1a1aa; background: #f4f4f5; }
+    #cover-upload-zone.drag-over { border-color: #111; background: #f4f4f5; }
+</style>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+    <h1 class="text-3xl font-extrabold mb-2">{% if object %}Edit Article{% else %}New Article{% endif %}</h1>
+    <p class="text-zinc-600 mb-6">Articles and edits from regular users are published after admin approval.</p>
+
+    <form id="article-form" method="post" enctype="multipart/form-data"
+          class="bg-white border border-zinc-200 rounded-lg p-6 space-y-5 shadow-sm">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+        <div>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-zinc-900 mb-2">
+                {{ field.label }}
+            </label>
+
+            {% if field.name == 'content' %}
+                <div id="editor-container"></div>
+                <input type="hidden" name="{{ field.name }}" id="quill-content-input"
+                       value="{{ field.value|default:'' }}">
+
+            {% elif field.name == 'image' %}
+                <div id="cover-upload-zone"
+                     class="relative border-2 border-dashed border-zinc-200 rounded-xl overflow-hidden cursor-pointer"
+                     onclick="document.getElementById('{{ field.id_for_label }}').click()">
+
+                    {% if object and object.image %}
+                    <img id="cover-preview" src="{{ object.image.url }}"
+                         class="w-full max-h-56 object-cover" alt="Cover">
+                    {% else %}
+                    <img id="cover-preview" class="hidden w-full max-h-56 object-cover" alt="Cover">
+                    {% endif %}
+
+                    <div id="cover-placeholder"
+                         class="{% if object and object.image %}hidden {% endif %}flex flex-col items-center justify-center py-10 text-zinc-400 select-none">
+                        <svg class="w-10 h-10 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="text-sm font-semibold text-zinc-500">Click or drag &amp; drop a cover image</p>
+                        <p class="text-xs mt-1">PNG, JPG, GIF, WebP</p>
+                    </div>
+
+                    <div class="hidden">{{ field }}</div>
+                </div>
+
+            {% else %}
+                {{ field }}
+            {% endif %}
+
+            {% if field.help_text %}
+                <p class="mt-1 text-xs text-zinc-500">{{ field.help_text }}</p>
+            {% endif %}
+            {% for error in field.errors %}
+                <p class="mt-1 text-sm font-semibold text-red-600">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <div class="flex flex-wrap gap-3 pt-3">
+            <button type="submit"
+                    class="bg-zinc-950 text-white px-5 py-3 rounded-md font-bold hover:bg-zinc-700">
+                Save article
+            </button>
+            <a href="{% url 'stdstack:article-list' %}"
+               class="bg-white text-zinc-900 border border-zinc-300 px-5 py-3 rounded-md font-bold hover:border-zinc-950">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script>
+    const toolbarOptions = [
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote', 'code-block'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['link', 'image'],
+        ['clean']
+    ];
+
+    const quill = new Quill('#editor-container', {
+        modules: { toolbar: toolbarOptions },
+        theme: 'snow',
+        placeholder: 'Write your story...'
+    });
+
+    const hiddenInput = document.getElementById('quill-content-input');
+    if (hiddenInput.value) {
+        quill.root.innerHTML = hiddenInput.value;
+    }
+
+    quill.getModule('toolbar').addHandler('image', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.click();
+        input.onchange = async () => {
+            const file = input.files[0];
+            if (!file) return;
+            const fd = new FormData();
+            fd.append('image', file);
+            fd.append('csrfmiddlewaretoken',
+                document.querySelector('[name=csrfmiddlewaretoken]').value);
+            try {
+                const res = await fetch('{% url "stdstack:article-upload-image" %}',
+                    { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.url) {
+                    const range = quill.getSelection(true);
+                    quill.insertEmbed(range.index, 'image', data.url, Quill.sources.USER);
+                    quill.setSelection(range.index + 1, Quill.sources.SILENT);
+                }
+            } catch (e) {
+                console.error('Image upload failed', e);
+            }
+        };
+    });
+
+    document.getElementById('article-form').addEventListener('submit', () => {
+        hiddenInput.value = quill.root.innerHTML;
+    });
+
+    const coverInput = document.getElementById('id_image');
+    const coverPreview = document.getElementById('cover-preview');
+    const coverPlaceholder = document.getElementById('cover-placeholder');
+    const coverZone = document.getElementById('cover-upload-zone');
+
+    if (coverInput) {
+        coverInput.addEventListener('change', () => {
+            const file = coverInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                coverPreview.src = e.target.result;
+                coverPreview.classList.remove('hidden');
+                coverPlaceholder.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        coverZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            coverZone.classList.add('drag-over');
+        });
+        coverZone.addEventListener('dragleave', () => coverZone.classList.remove('drag-over'));
+        coverZone.addEventListener('drop', e => {
+            e.preventDefault();
+            coverZone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            coverInput.files = dt.files;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                coverPreview.src = ev.target.result;
+                coverPreview.classList.remove('hidden');
+                coverPlaceholder.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
+{% endblock %}

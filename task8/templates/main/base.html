@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StdStack{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f7f7f7; }
+        input, select, textarea {
+            width: 100%;
+            padding: 0.7rem 0.85rem;
+            border: 1px solid #d4d4d8;
+            border-radius: 0.375rem;
+            background: #fff;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #111;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+        }
+        textarea { min-height: 170px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-zinc-950">
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-zinc-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="min-h-16 py-3 flex flex-wrap items-center justify-between gap-4">
+                <a href="{% url 'stdstack:article-list' %}" class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-md bg-zinc-950 text-white grid place-items-center font-extrabold">S</span>
+                    <span class="text-xl font-extrabold tracking-tight">stdstack</span>
+                </a>
+
+                <div class="flex flex-wrap items-center gap-4 text-sm font-semibold text-zinc-600">
+                    <a class="hover:text-black" href="{% url 'stdstack:article-list' %}">Articles</a>
+                    <a class="hover:text-black" href="{% url 'stdstack:article-popular' %}">Popular</a>
+                    <div class="relative group">
+                        <button type="button" class="font-semibold hover:text-black">Categories</button>
+                        <div class="hidden group-hover:block absolute right-0 sm:left-0 sm:right-auto pt-2 w-56">
+                            <div class="bg-white border border-zinc-200 rounded-md shadow-sm py-2">
+                                {% for category in navigation_categories %}
+                                <a class="block px-4 py-2 text-zinc-700 hover:bg-zinc-100 hover:text-black" href="{% url 'stdstack:category-detail' category.slug %}">
+                                    {{ category.name }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <a class="hover:text-black" href="{% url 'stdstack:authors' %}">Authors</a>
+                    {% if user.is_authenticated %}
+                    <a class="hover:text-black" href="{% url 'stdstack:favorites' %}">Favorites</a>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center gap-3">
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'stdstack:users-admin' %}" class="text-sm font-semibold text-zinc-600 hover:text-black">Users</a>
+                        {% endif %}
+                        <a href="{% url 'stdstack:article-create' %}" class="bg-zinc-950 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-zinc-700">Write</a>
+                        <a href="{% url 'stdstack:profile-settings' %}" class="hidden sm:inline text-sm text-zinc-500 hover:text-black">{{ user.username }}</a>
+                        <form action="{% url 'stdstack:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="text-sm font-semibold text-zinc-600 hover:text-black">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'stdstack:login' %}" class="text-sm font-semibold text-zinc-600 hover:text-black">Login</a>
+                        <a href="{% url 'stdstack:register' %}" class="bg-zinc-950 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-zinc-700">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 mt-4 space-y-2">
+        {% for message in messages %}
+        <div class="bg-white border border-zinc-200 text-zinc-800 rounded-md px-4 py-3 text-sm font-medium">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="flex-grow w-full">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-zinc-200 bg-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-sm text-zinc-500">
+            &copy; {% now "Y" %} StdStack
+        </div>
+    </footer>
+</body>
+</html>

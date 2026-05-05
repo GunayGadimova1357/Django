@@ -1,0 +1,58 @@
+{% extends "main/base.html" %}
+
+{% block title %}Users - StdStack{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-3xl font-extrabold mb-6">Users</h1>
+    <div class="bg-white border border-zinc-200 rounded-lg overflow-x-auto shadow-sm">
+        <table class="min-w-full text-sm">
+            <thead class="bg-zinc-50 text-left text-zinc-500 border-b border-zinc-200">
+                <tr>
+                    <th class="p-4">User</th>
+                    <th class="p-4">Role</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-100">
+                {% for account in users %}
+                <tr>
+                    <td class="p-4 font-bold">{{ account.username }}</td>
+                    <td class="p-4">
+                        {% if account.is_superuser %}Super admin{% elif account.is_staff %}Admin{% else %}User{% endif %}
+                    </td>
+                    <td class="p-4">
+                        {% if account.profile.is_banned %}Banned{% else %}Active{% endif %}
+                    </td>
+                    <td class="p-4">
+                        <div class="flex flex-wrap gap-2">
+                            {% if user.is_superuser and not account.is_superuser %}
+                            <form method="post" action="{% url 'stdstack:user-action' account.pk 'promote' %}">
+                                {% csrf_token %}
+                                <button class="px-3 py-2 bg-white border border-zinc-300 rounded-md font-bold hover:border-zinc-950" type="submit">Make admin</button>
+                            </form>
+                            <form method="post" action="{% url 'stdstack:user-action' account.pk 'demote' %}">
+                                {% csrf_token %}
+                                <button class="px-3 py-2 bg-white border border-zinc-300 rounded-md font-bold hover:border-zinc-950" type="submit">Make user</button>
+                            </form>
+                            {% endif %}
+                            {% if not account.is_superuser %}
+                            <form method="post" action="{% url 'stdstack:user-action' account.pk 'ban' %}">
+                                {% csrf_token %}
+                                <button class="px-3 py-2 bg-white text-zinc-950 border border-zinc-300 rounded-md font-bold hover:border-zinc-950" type="submit">Ban</button>
+                            </form>
+                            <form method="post" action="{% url 'stdstack:user-action' account.pk 'unban' %}">
+                                {% csrf_token %}
+                                <button class="px-3 py-2 bg-white text-zinc-950 border border-zinc-300 rounded-md font-bold hover:border-zinc-950" type="submit">Unban</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

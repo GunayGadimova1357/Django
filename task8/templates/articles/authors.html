@@ -1,0 +1,30 @@
+{% extends "main/base.html" %}
+
+{% block title %}Authors - StdStack{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-3xl font-extrabold mb-6">Authors</h1>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for author in authors %}
+        <a href="{% url 'stdstack:author-detail' author.pk %}"
+           class="bg-white border border-zinc-200 rounded-lg p-5 shadow-sm hover:border-zinc-950 flex items-center gap-4">
+            {% if author.profile.avatar %}
+            <img src="{{ author.profile.avatar.url }}" alt=""
+                 class="w-12 h-12 rounded-full object-cover shrink-0">
+            {% else %}
+            <span class="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center text-xl font-extrabold text-zinc-400 shrink-0">
+                {{ author.username|slice:":1"|upper }}
+            </span>
+            {% endif %}
+            <div>
+                <div class="text-xl font-extrabold">{{ author.username }}</div>
+                <div class="text-sm text-zinc-500 mt-0.5">{{ author.approved_articles_count }} approved articles</div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="bg-white border border-zinc-200 rounded-lg p-8 text-zinc-600">No authors yet.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

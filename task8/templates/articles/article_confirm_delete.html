@@ -1,0 +1,17 @@
+{% extends "main/base.html" %}
+
+{% block title %}Delete Article - StdStack{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 py-12">
+    <div class="bg-white border border-zinc-200 rounded-lg p-6 shadow-sm">
+        <h1 class="text-2xl font-extrabold mb-3">Delete article</h1>
+        <p class="text-zinc-600 mb-6">Delete "{{ object.title }}"?</p>
+        <form method="post" class="flex gap-3">
+            {% csrf_token %}
+            <button type="submit" class="bg-zinc-950 text-white px-5 py-3 rounded-md font-bold hover:bg-zinc-700">Delete</button>
+            <a href="{{ object.get_absolute_url }}" class="bg-white text-zinc-900 border border-zinc-300 px-5 py-3 rounded-md font-bold hover:border-zinc-950">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

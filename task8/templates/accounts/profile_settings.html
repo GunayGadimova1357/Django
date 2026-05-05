@@ -1,0 +1,173 @@
+{% extends "main/base.html" %}
+
+{% block title %}Profile Settings - StdStack{% endblock %}
+
+{% block content %}
+<style>
+    #avatar-upload-zone { transition: border-color 0.15s, background 0.15s; }
+    #avatar-upload-zone:hover { border-color: #a1a1aa; background: #f4f4f5; }
+</style>
+
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+    <div>
+        <h1 class="text-3xl font-extrabold mb-1">Profile Settings</h1>
+        <p class="text-zinc-500 text-sm">Manage your account details and security.</p>
+    </div>
+
+    <!-- ── Profile info ── -->
+    <section class="bg-white border border-zinc-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-zinc-100">
+            <h2 class="font-extrabold text-lg">Profile</h2>
+        </div>
+        <form method="post" enctype="multipart/form-data" class="px-6 py-5 space-y-5">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="profile">
+
+            <!-- Avatar -->
+            <div class="flex items-start gap-5">
+                <div class="shrink-0">
+                    {% if profile.avatar %}
+                    <img id="avatar-preview" src="{{ profile.avatar.url }}"
+                         class="w-20 h-20 rounded-full object-cover border border-zinc-200" alt="Avatar">
+                    {% else %}
+                    <div id="avatar-fallback"
+                         class="w-20 h-20 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-2xl font-extrabold text-zinc-400 select-none">
+                        {{ user.username|slice:":1"|upper }}
+                    </div>
+                    <img id="avatar-preview" class="hidden w-20 h-20 rounded-full object-cover border border-zinc-200" alt="Avatar">
+                    {% endif %}
+                </div>
+
+                <div class="flex-1">
+                    <label class="block text-sm font-bold text-zinc-900 mb-2">Avatar</label>
+                    <div id="avatar-upload-zone"
+                         class="border-2 border-dashed border-zinc-200 rounded-lg px-4 py-5 cursor-pointer flex flex-col items-center gap-1 text-zinc-400"
+                         onclick="document.getElementById('id_avatar').click()">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        <p class="text-sm font-medium text-zinc-500">Click to upload a new avatar</p>
+                    </div>
+                    <div class="hidden">{{ avatar_form.avatar }}</div>
+                    {% for error in avatar_form.avatar.errors %}
+                    <p class="mt-1 text-sm text-red-600 font-semibold">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Username -->
+            <div>
+                <label for="{{ user_form.username.id_for_label }}"
+                       class="block text-sm font-bold text-zinc-900 mb-2">Username</label>
+                {{ user_form.username }}
+                {% for error in user_form.username.errors %}
+                <p class="mt-1 text-sm text-red-600 font-semibold">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="{{ user_form.email.id_for_label }}"
+                       class="block text-sm font-bold text-zinc-900 mb-2">Email</label>
+                {{ user_form.email }}
+                {% for error in user_form.email.errors %}
+                <p class="mt-1 text-sm text-red-600 font-semibold">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <button type="submit"
+                    class="bg-zinc-950 text-white px-5 py-2.5 rounded-md font-bold text-sm hover:bg-zinc-700">
+                Save changes
+            </button>
+        </form>
+    </section>
+
+    <!-- ── Change password ── -->
+    <section class="bg-white border border-zinc-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-zinc-100">
+            <h2 class="font-extrabold text-lg">Change Password</h2>
+        </div>
+        <form method="post" class="px-6 py-5 space-y-5">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="password">
+
+            {% for field in password_form %}
+            <div>
+                <label for="{{ field.id_for_label }}"
+                       class="block text-sm font-bold text-zinc-900 mb-2">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                <p class="mt-1 text-sm text-red-600 font-semibold">{{ error }}</p>
+                {% endfor %}
+                {% if field.errors and field.help_text %}
+                <p class="mt-1 text-xs text-zinc-500">{{ field.help_text }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button type="submit"
+                    class="bg-zinc-950 text-white px-5 py-2.5 rounded-md font-bold text-sm hover:bg-zinc-700">
+                Update password
+            </button>
+        </form>
+    </section>
+
+    <!-- ── Danger zone ── -->
+    <section class="bg-white border border-red-100 rounded-lg shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-red-100">
+            <h2 class="font-extrabold text-lg text-red-700">Danger Zone</h2>
+        </div>
+        <div class="px-6 py-5 flex items-center justify-between gap-4">
+            <div>
+                <p class="font-semibold text-zinc-900">Delete account</p>
+                <p class="text-sm text-zinc-500 mt-0.5">Permanently remove your account and all your data. This action cannot be undone.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('delete-modal').classList.remove('hidden')"
+                    class="shrink-0 border border-red-300 text-red-700 px-4 py-2 rounded-md font-bold text-sm hover:bg-red-50">
+                Delete account
+            </button>
+        </div>
+    </section>
+</div>
+
+<!-- Delete confirmation modal -->
+<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full mx-4 p-6">
+        <h3 class="text-xl font-extrabold mb-2">Delete account?</h3>
+        <p class="text-sm text-zinc-600 mb-6">This will permanently delete your account, all your articles, and ratings. There is no way to recover it.</p>
+        <div class="flex gap-3">
+            <form action="{% url 'stdstack:delete-account' %}" method="post" class="flex-1">
+                {% csrf_token %}
+                <button type="submit"
+                        class="w-full bg-red-600 text-white px-4 py-2.5 rounded-md font-bold text-sm hover:bg-red-700">
+                    Yes, delete forever
+                </button>
+            </form>
+            <button type="button" onclick="document.getElementById('delete-modal').classList.add('hidden')"
+                    class="flex-1 border border-zinc-300 px-4 py-2.5 rounded-md font-bold text-sm hover:border-zinc-950">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const avatarInput = document.getElementById('id_avatar');
+    if (avatarInput) {
+        avatarInput.addEventListener('change', () => {
+            const file = avatarInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const preview = document.getElementById('avatar-preview');
+                const fallback = document.getElementById('avatar-fallback');
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                if (fallback) fallback.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
+{% endblock %}
