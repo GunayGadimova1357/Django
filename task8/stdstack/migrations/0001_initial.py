@@ -47,8 +47,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=200, verbose_name='Title')),
-                ('image', models.FileField(blank=True, help_text='Uploads try Cloudinary first. If it rejects the file, the image is stored locally.', storage=stdstack.storage.CloudinaryFallbackStorage(), upload_to='articles/', verbose_name='Image')),
-                ('excerpt', models.TextField(blank=True, help_text='If left empty, the preview will be generated from the article text.', verbose_name='Excerpt')),
+                ('image', models.FileField(blank=True, storage=stdstack.storage.CloudinaryFallbackStorage(), upload_to='articles/', verbose_name='Image')),
                 ('content', models.TextField(verbose_name='Full article')),
                 ('status', models.CharField(choices=[('pending', 'Pending review'), ('approved', 'Approved'), ('rejected', 'Rejected')], db_index=True, default='pending', max_length=20, verbose_name='Publication status')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),

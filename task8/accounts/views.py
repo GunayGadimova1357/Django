@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login, update_session_auth_hash
+from django.contrib.auth import get_user_model, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponseForbidden
@@ -75,7 +75,6 @@ def profile_settings(request):
 def delete_account(request):
     if request.method == "POST":
         user = request.user
-        from django.contrib.auth import logout
         logout(request)
         user.delete()
         messages.success(request, "Your account has been permanently deleted.")

@@ -50,10 +50,10 @@ class Article(models.Model):
         storage=CloudinaryFallbackStorage(),
         blank=True,
         verbose_name="Image",
-        help_text="Uploads try Cloudinary first. If it rejects the file, the image is stored locally.",
     )
     excerpt = models.TextField(
         blank=True,
+        default="",
         verbose_name="Excerpt",
         help_text="If left empty, the preview will be generated from the article text.",
     )

@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -230,9 +231,6 @@ def toggle_bookmark(request, pk):
     if not created:
         bookmark.delete()
     return HttpResponseRedirect(request.POST.get("next") or article.get_absolute_url())
-
-
-from django.contrib.auth.decorators import login_required
 
 
 @login_required
